@@ -19,12 +19,14 @@ interface SellerProfile {
 export default function SellerDashboard() {
   const { data: session, status } = useSession()
   const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null)
+  const [productCount, setProductCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
     if (status === 'authenticated') {
       fetchSellerProfile()
+      fetchProductCount()
     }
   }, [status])
 
@@ -42,6 +44,18 @@ export default function SellerDashboard() {
       console.error('Error fetching seller profile:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchProductCount = async () => {
+    try {
+      const response = await fetch('/api/products?limit=1')
+      if (response.ok) {
+        const data = await response.json()
+        setProductCount(data.pagination?.total || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching product count:', error)
     }
   }
 
@@ -153,7 +167,7 @@ export default function SellerDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Products</p>
-                <p className="text-2xl font-semibold text-gray-900">0</p>
+                <p className="text-2xl font-semibold text-gray-900">{productCount}</p>
               </div>
             </div>
           </div>
@@ -201,9 +215,21 @@ export default function SellerDashboard() {
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Products</h3>
             <p className="text-gray-600 mb-4">Add, edit, and manage your product inventory</p>
-            <Button className="w-full" disabled>
-              Coming Soon
-            </Button>
+            <div className="space-y-2">
+              <Button 
+                className="w-full" 
+                onClick={() => router.push('/seller/products')}
+              >
+                View All Products
+              </Button>
+              <Button 
+                variant="outline"
+                className="w-full" 
+                onClick={() => router.push('/seller/products/create')}
+              >
+                Add New Product
+              </Button>
+            </div>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow">
