@@ -211,7 +211,7 @@ export default function SellerDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Products</h3>
             <p className="text-gray-600 mb-4">Add, edit, and manage your product inventory</p>
@@ -233,15 +233,38 @@ export default function SellerDashboard() {
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">View Orders</h3>
-            <p className="text-gray-600 mb-4">Track and manage your customer orders</p>
-            <Button className="w-full" variant="outline" disabled>
-              Coming Soon
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Categories</h3>
+            <p className="text-gray-600 mb-4">Organize products with categories and subcategories</p>
+            <div className="space-y-2">
+              <Button 
+                className="w-full" 
+                onClick={() => router.push('/seller/categories')}
+              >
+                Manage Categories
+              </Button>
+              <Button 
+                variant="outline"
+                className="w-full" 
+                onClick={() => router.push('/seller/categories/create')}
+              >
+                Add Category
+              </Button>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Inventory</h3>
+            <p className="text-gray-600 mb-4">Track stock levels and manage inventory</p>
+            <Button 
+              className="w-full" 
+              onClick={() => router.push('/seller/inventory')}
+            >
+              Manage Inventory
             </Button>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Documents</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Documents</h3>
             <p className="text-gray-600 mb-4">Submit verification documents</p>
             <Button 
               className="w-full" 
