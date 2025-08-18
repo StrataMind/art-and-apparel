@@ -1,11 +1,17 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 export default function Home() {
   const { data: session, status } = useSession()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -19,7 +25,12 @@ export default function Home() {
               <Link href="/products">
                 <Button variant="ghost" size="sm">Browse Products</Button>
               </Link>
-              {status === 'loading' ? (
+              {!mounted ? (
+                <div className="flex items-center space-x-4">
+                  <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-9 w-20 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              ) : status === 'loading' ? (
                 <div className="flex items-center space-x-4">
                   <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
                   <div className="h-9 w-20 bg-gray-200 rounded animate-pulse"></div>
@@ -59,7 +70,7 @@ export default function Home() {
           </p>
           
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            {status === 'loading' ? (
+            {!mounted || status === 'loading' ? (
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <div className="h-12 w-32 bg-gray-200 rounded animate-pulse"></div>
                 <div className="h-12 w-32 bg-gray-200 rounded animate-pulse"></div>

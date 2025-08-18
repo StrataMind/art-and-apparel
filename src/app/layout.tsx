@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Findora Team" }],
   icons: {
     icon: "/favicon.ico",
-    apple: "/icon-192x192.png",
+    apple: "/icon-192x192.svg",
   },
 };
 
