@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { ImageUpload } from '@/components/ui/image-upload'
+import BackButton from '@/components/ui/back-button'
 
 interface Category {
   id: string
@@ -149,12 +150,7 @@ export default function CreateCategoryPage() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-6">
-            <Link href="/seller/categories">
-              <Button variant="ghost" size="sm" className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Categories
-              </Button>
-            </Link>
+            <BackButton href="/seller/categories" label="Back to Categories" className="mr-4" />
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Create Category</h1>
               <p className="text-gray-600">Add a new category to organize your products</p>

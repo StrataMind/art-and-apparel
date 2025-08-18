@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import BackButton from '@/components/ui/back-button'
 import { 
   ShoppingCart, 
   Heart, 
@@ -192,7 +193,9 @@ export default function ProductPage() {
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center justify-between">
+            <BackButton href="/products" label="Back to Products" />
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
             <button onClick={() => router.push('/products')} className="hover:text-blue-600">
               Products
             </button>
@@ -204,6 +207,7 @@ export default function ProductPage() {
               </>
             )}
             <span className="text-gray-900">{product.name}</span>
+            </div>
           </div>
         </div>
       </div>

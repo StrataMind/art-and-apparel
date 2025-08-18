@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import Breadcrumb from '@/components/ui/breadcrumb'
+import BackButton from '@/components/ui/back-button'
 import { 
   Plus, 
   Search, 
@@ -269,9 +270,12 @@ export default function ProductsPage() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-              <p className="text-gray-600">Manage your product inventory</p>
+            <div className="flex items-center">
+              <BackButton href="/dashboard" className="mr-4" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+                <p className="text-gray-600">Manage your product inventory</p>
+              </div>
             </div>
             <Button onClick={() => router.push('/seller/products/create')}>
               <Plus className="h-4 w-4 mr-2" />

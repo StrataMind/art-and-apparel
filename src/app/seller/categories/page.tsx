@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import Breadcrumb from '@/components/ui/breadcrumb'
+import BackButton from '@/components/ui/back-button'
 import { 
   Plus, 
   Search, 
@@ -130,9 +131,12 @@ export default function CategoriesPage() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Categories Management</h1>
-              <p className="text-gray-600">Organize your products with categories and subcategories</p>
+            <div className="flex items-center">
+              <BackButton href="/dashboard" className="mr-4" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Categories Management</h1>
+                <p className="text-gray-600">Organize your products with categories and subcategories</p>
+              </div>
             </div>
             <div className="flex items-center space-x-3">
               <Button variant="outline" onClick={fetchCategories}>

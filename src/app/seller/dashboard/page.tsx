@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Breadcrumb from '@/components/ui/breadcrumb'
+import BackButton from '@/components/ui/back-button'
 
 interface SellerProfile {
   id: string
@@ -111,9 +112,12 @@ export default function SellerDashboard() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Seller Dashboard</h1>
-              <p className="text-gray-600">{sellerProfile.businessName}</p>
+            <div className="flex items-center">
+              <BackButton href="/dashboard" className="mr-4" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Seller Dashboard</h1>
+                <p className="text-gray-600">{sellerProfile.businessName}</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               {getVerificationBadge(sellerProfile.verificationStatus)}
