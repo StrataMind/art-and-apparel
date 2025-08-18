@@ -7,17 +7,15 @@ import { Button } from '@/components/ui/button'
 import BackButton from '@/components/ui/back-button'
 import { useAnalytics } from '@/lib/analytics'
 import { useRecommendations } from '@/lib/recommendations'
+import AddToCartButton from '@/components/product/add-to-cart-button'
+import Header from '@/components/navigation/header'
 import { 
-  ShoppingCart, 
   Heart, 
   Share2, 
   Star, 
   Package, 
   Truck, 
   Shield, 
-  ArrowLeft,
-  Plus,
-  Minus,
   Verified,
   MessageCircle
 } from 'lucide-react'
@@ -92,7 +90,6 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
 
   useEffect(() => {
@@ -194,23 +191,6 @@ export default function ProductPage() {
     )
   }
 
-  const addToCart = () => {
-    // TODO: Implement add to cart functionality
-    alert(`Added ${quantity} ${product?.name} to cart`)
-  }
-
-  const increaseQuantity = () => {
-    if (product && quantity < product.inventory) {
-      setQuantity(quantity + 1)
-    }
-  }
-
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1)
-    }
-  }
-
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
   }
@@ -237,6 +217,9 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <Header />
+      
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -373,48 +356,28 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Quantity and Add to Cart */}
+            {/* Add to Cart */}
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Quantity
-                </label>
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center border border-gray-300 rounded-md">
-                    <button
-                      onClick={decreaseQuantity}
-                      disabled={quantity <= 1}
-                      className="p-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </button>
-                    <span className="px-4 py-2 min-w-[60px] text-center">{quantity}</span>
-                    <button
-                      onClick={increaseQuantity}
-                      disabled={quantity >= product.inventory}
-                      className="p-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {product.inventory} available
-                  </span>
-                </div>
-              </div>
+              <AddToCartButton
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  price: product.price,
+                  compareAtPrice: product.compareAtPrice,
+                  inventory: product.inventory,
+                  status: product.inventory === 0 ? 'OUT_OF_STOCK' : 'ACTIVE',
+                  images: product.images,
+                  seller: product.seller
+                }}
+                size="lg"
+                showQuantitySelector={true}
+              />
 
               <div className="flex space-x-4">
-                <Button
-                  size="lg"
-                  className="flex-1"
-                  onClick={addToCart}
-                  disabled={product.inventory === 0}
-                >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  {product.inventory === 0 ? 'Out of Stock' : 'Add to Cart'}
-                </Button>
-                <Button size="lg" variant="outline">
-                  <Heart className="h-5 w-5" />
+                <Button size="lg" variant="outline" className="flex-1">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Add to Wishlist
                 </Button>
                 <Button size="lg" variant="outline">
                   <Share2 className="h-5 w-5" />
