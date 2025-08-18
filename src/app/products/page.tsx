@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import PriceRangeSlider from '@/components/filters/price-range-slider'
+import RatingFilter from '@/components/filters/rating-filter'
+import SellerFilter from '@/components/filters/seller-filter'
+import AvailabilityFilter from '@/components/filters/availability-filter'
+import NoResults from '@/components/search/no-results'
+import { useSearchAnalytics } from '@/lib/search-analytics'
 import { 
   Search, 
   Filter, 
@@ -77,6 +83,7 @@ const sortOptions = [
 export default function ProductsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { trackSearch, trackResultClick } = useSearchAnalytics()
   
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -92,6 +99,19 @@ export default function ProductsPage() {
   const [featuredOnly, setFeaturedOnly] = useState(searchParams.get('featured') === 'true')
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'))
   
+  // Advanced filter states
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    parseInt(searchParams.get('minPrice') || '0'),
+    parseInt(searchParams.get('maxPrice') || '1000')
+  ])
+  const [minRating, setMinRating] = useState(parseInt(searchParams.get('rating') || '0'))
+  const [sellerTypes, setSellerTypes] = useState<string[]>(
+    searchParams.get('sellers')?.split(',') || []
+  )
+  const [availability, setAvailability] = useState<string[]>(
+    searchParams.get('availability')?.split(',') || []
+  )
+  
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 12,
@@ -102,7 +122,7 @@ export default function ProductsPage() {
   useEffect(() => {
     fetchProducts()
     updateURL()
-  }, [currentPage, selectedCategory, sortBy, searchTerm, minPrice, maxPrice, featuredOnly])
+  }, [currentPage, selectedCategory, sortBy, searchTerm, priceRange, minRating, sellerTypes, availability, featuredOnly])
 
   const fetchProducts = async () => {
     try {
@@ -112,8 +132,11 @@ export default function ProductsPage() {
         limit: '12',
         ...(selectedCategory !== 'all' && { category: selectedCategory }),
         ...(searchTerm && { search: searchTerm }),
-        ...(minPrice && { minPrice }),
-        ...(maxPrice && { maxPrice }),
+        ...(priceRange[0] > 0 && { minPrice: priceRange[0].toString() }),
+        ...(priceRange[1] < 1000 && { maxPrice: priceRange[1].toString() }),
+        ...(minRating > 0 && { rating: minRating.toString() }),
+        ...(sellerTypes.length > 0 && { sellers: sellerTypes.join(',') }),
+        ...(availability.length > 0 && { availability: availability.join(',') }),
         ...(featuredOnly && { featured: 'true' })
       })
 
@@ -127,6 +150,22 @@ export default function ProductsPage() {
         const data: ProductsResponse = await response.json()
         setProducts(data.products)
         setPagination(data.pagination)
+        
+        // Track search analytics
+        if (searchTerm) {
+          trackSearch(
+            searchTerm, 
+            data.products.length,
+            selectedCategory !== 'all' ? selectedCategory : undefined,
+            {
+              priceRange,
+              minRating,
+              sellerTypes,
+              availability,
+              featuredOnly
+            }
+          )
+        }
       }
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -140,8 +179,11 @@ export default function ProductsPage() {
     if (searchTerm) params.set('search', searchTerm)
     if (selectedCategory !== 'all') params.set('category', selectedCategory)
     if (sortBy !== 'createdAt:desc') params.set('sortBy', sortBy)
-    if (minPrice) params.set('minPrice', minPrice)
-    if (maxPrice) params.set('maxPrice', maxPrice)
+    if (priceRange[0] > 0) params.set('minPrice', priceRange[0].toString())
+    if (priceRange[1] < 1000) params.set('maxPrice', priceRange[1].toString())
+    if (minRating > 0) params.set('rating', minRating.toString())
+    if (sellerTypes.length > 0) params.set('sellers', sellerTypes.join(','))
+    if (availability.length > 0) params.set('availability', availability.join(','))
     if (featuredOnly) params.set('featured', 'true')
     if (currentPage > 1) params.set('page', currentPage.toString())
 
@@ -153,8 +195,10 @@ export default function ProductsPage() {
     setSearchTerm('')
     setSelectedCategory('all')
     setSortBy('createdAt:desc')
-    setMinPrice('')
-    setMaxPrice('')
+    setPriceRange([0, 1000])
+    setMinRating(0)
+    setSellerTypes([])
+    setAvailability([])
     setFeaturedOnly(false)
     setCurrentPage(1)
   }
@@ -179,10 +223,19 @@ export default function ProductsPage() {
     )
   }
 
-  const ProductCard = ({ product }: { product: Product }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
-      <div className="relative">
-        <div className="aspect-square overflow-hidden">
+  const ProductCard = ({ product }: { product: Product }) => {
+    const handleProductClick = () => {
+      if (searchTerm) {
+        const position = products.findIndex(p => p.id === product.id) + 1
+        trackResultClick(product.id, position, searchTerm)
+      }
+      router.push(`/products/${product.slug}`)
+    }
+
+    return (
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
+        <div className="relative">
+          <div className="aspect-square overflow-hidden">
           {product.images.length > 0 ? (
             <img
               src={product.images[0].url}
@@ -271,7 +324,7 @@ export default function ProductsPage() {
           </span>
           <Button
             size="sm"
-            onClick={() => router.push(`/products/${product.slug}`)}
+            onClick={handleProductClick}
           >
             <ShoppingCart className="h-4 w-4 mr-1" />
             View
@@ -279,7 +332,8 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
-  )
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -426,14 +480,18 @@ export default function ProductsPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-12">
-                <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-600 mb-4">
-                  Try adjusting your search criteria or browse different categories
-                </p>
-                <Button onClick={clearFilters}>Clear Filters</Button>
-              </div>
+              <NoResults
+                searchTerm={searchTerm}
+                totalFilters={(
+                  (priceRange[0] > 0 || priceRange[1] < 1000 ? 1 : 0) +
+                  (minRating > 0 ? 1 : 0) +
+                  sellerTypes.length +
+                  availability.length +
+                  (featuredOnly ? 1 : 0)
+                )}
+                onClearFilters={clearFilters}
+                onClearSearch={() => setSearchTerm('')}
+              />
             ) : (
               <>
                 <div className={viewMode === 'grid' 
