@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import BackButton from '@/components/ui/back-button'
 
 const sellerRegistrationSchema = z.object({
   // Business Information
@@ -186,6 +187,9 @@ export default function SellerRegisterPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="mb-4 flex justify-start">
+            <BackButton href="/dashboard" label="Back to Dashboard" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900">Become a Seller on Findora</h1>
           <p className="mt-2 text-gray-600">
             Join thousands of sellers and start growing your business with us

@@ -8,6 +8,7 @@ import PriceRangeSlider from '@/components/filters/price-range-slider'
 import RatingFilter from '@/components/filters/rating-filter'
 import SellerFilter from '@/components/filters/seller-filter'
 import AvailabilityFilter from '@/components/filters/availability-filter'
+import BackButton from '@/components/ui/back-button'
 import NoResults from '@/components/search/no-results'
 import { useSearchAnalytics } from '@/lib/search-analytics'
 import { 
@@ -341,11 +342,14 @@ export default function ProductsPage() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-              <p className="text-gray-600">
-                {pagination.total} products available
-              </p>
+            <div className="flex items-center">
+              <BackButton href="/" label="Back to Home" className="mr-4" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+                <p className="text-gray-600">
+                  {pagination.total} products available
+                </p>
+              </div>
             </div>
             <div className="flex items-center space-x-2">
               <Button

@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import BackButton from '@/components/ui/back-button'
 
 const documentTypes = [
   { value: 'ID_FRONT', label: 'Government ID (Front)', required: true },
@@ -121,13 +122,9 @@ export default function SellerDocumentsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
-            <button onClick={() => router.push('/seller/dashboard')} className="hover:text-gray-700">
-              Seller Dashboard
-            </button>
-            <span>/</span>
-            <span className="text-gray-900">Upload Documents</span>
-          </nav>
+          <div className="mb-4">
+            <BackButton href="/seller/dashboard" label="Back to Dashboard" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900">Verification Documents</h1>
           <p className="mt-2 text-gray-600">
             Upload the required documents to verify your seller account and start selling on Findora.

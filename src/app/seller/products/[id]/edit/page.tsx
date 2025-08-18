@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import ImageUpload from '@/components/ui/image-upload'
+import BackButton from '@/components/ui/back-button'
 import { ArrowLeft, Save, Trash2 } from 'lucide-react'
 
 const productSchema = z.object({
@@ -260,14 +261,7 @@ export default function EditProductPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                onClick={() => router.back()}
-                className="mr-4"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
+              <BackButton className="mr-4" />
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
                 <p className="text-gray-600">Update your product information</p>

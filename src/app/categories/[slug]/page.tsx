@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import BackButton from '@/components/ui/back-button'
 import { 
   Search, 
   Filter, 
@@ -179,6 +180,11 @@ export default function CategoryPage() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
+            {/* Back Button */}
+            <div className="mb-4">
+              <BackButton href="/products" label="Back to Products" />
+            </div>
+            
             {/* Breadcrumb */}
             <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
               <Link href="/products" className="hover:text-gray-900">Products</Link>

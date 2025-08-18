@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import BackButton from '@/components/ui/back-button'
 import { 
   ArrowLeft, 
   Edit, 
@@ -197,14 +198,7 @@ export default function ProductDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                onClick={() => router.back()}
-                className="mr-4"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
+              <BackButton className="mr-4" />
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
                 <p className="text-gray-600">Product Details</p>
