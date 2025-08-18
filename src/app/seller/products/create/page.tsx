@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import ImageUpload from '@/components/ui/image-upload'
+import Breadcrumb from '@/components/ui/breadcrumb'
 import { ArrowLeft, Save, Eye } from 'lucide-react'
 
 const productSchema = z.object({
@@ -152,6 +153,17 @@ export default function CreateProductPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumb
+          items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Products', href: '/seller/products' },
+            { label: 'Create Product', current: true }
+          ]}
+        />
       </div>
 
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">

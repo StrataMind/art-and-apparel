@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import Breadcrumb from '@/components/ui/breadcrumb'
 
 interface SellerProfile {
   id: string
@@ -122,6 +123,16 @@ export default function SellerDashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumb
+          items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Seller Dashboard', current: true }
+          ]}
+        />
       </div>
 
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

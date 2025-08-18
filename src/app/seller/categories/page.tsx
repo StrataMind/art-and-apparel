@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import Breadcrumb from '@/components/ui/breadcrumb'
 import { 
   Plus, 
   Search, 
@@ -147,6 +148,16 @@ export default function CategoriesPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumb
+          items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Categories', current: true }
+          ]}
+        />
       </div>
 
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
