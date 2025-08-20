@@ -479,5 +479,3 @@ export function QuickShareButtons({ shareData, onShare, className = '' }: ShareB
   )
 }
 
-export { ShareButtons }
-export default ShareButtons

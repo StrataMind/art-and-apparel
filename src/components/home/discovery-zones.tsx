@@ -575,4 +575,3 @@ export default function DiscoveryZones() {
   )
 }
 
-export { DiscoveryZones }

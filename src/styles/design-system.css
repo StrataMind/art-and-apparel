@@ -29,6 +29,20 @@
   --color-danger: #E74C3C;
   --color-info: #3498DB;
   
+  /* 🎨 Minimalist Theme Colors */
+  --minimal-white: #FFFFFF;
+  --minimal-gray-50: #FAFAFA;
+  --minimal-gray-100: #F5F5F5;
+  --minimal-gray-200: #EEEEEE;
+  --minimal-gray-300: #E0E0E0;
+  --minimal-gray-400: #BDBDBD;
+  --minimal-gray-500: #9E9E9E;
+  --minimal-gray-600: #757575;
+  --minimal-gray-700: #616161;
+  --minimal-gray-800: #424242;
+  --minimal-gray-900: #212121;
+  --minimal-accent: #2563EB; /* Clean blue accent */
+  
   /* 📝 Text Colors */
   --text-primary: var(--color-secondary-charcoal);
   --text-secondary: var(--color-secondary-gray);
@@ -191,6 +205,18 @@
 .bg-gold { background-color: var(--gold); }
 .bg-mint { background-color: var(--mint); }
 .border-coral { border-color: var(--coral); }
+
+/* Minimalist utilities */
+.text-minimal-gray-900 { color: var(--minimal-gray-900); }
+.text-minimal-gray-700 { color: var(--minimal-gray-700); }
+.text-minimal-gray-500 { color: var(--minimal-gray-500); }
+.text-minimal-accent { color: var(--minimal-accent); }
+.bg-minimal-white { background-color: var(--minimal-white); }
+.bg-minimal-gray-50 { background-color: var(--minimal-gray-50); }
+.bg-minimal-gray-100 { background-color: var(--minimal-gray-100); }
+.bg-minimal-accent { background-color: var(--minimal-accent); }
+.border-minimal-gray-200 { border-color: var(--minimal-gray-200); }
+.border-minimal-gray-300 { border-color: var(--minimal-gray-300); }
 
 /* Glassmorphism */
 .glass {

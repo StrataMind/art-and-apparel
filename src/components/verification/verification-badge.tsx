@@ -256,4 +256,3 @@ export function VerificationStatus({
   )
 }
 
-export { VerificationBadge, TrustScoreBadge, VerificationStatus }

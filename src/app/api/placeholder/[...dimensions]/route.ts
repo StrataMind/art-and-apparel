@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { dimensions: string[] } }
+  { params }: { params: Promise<{ dimensions: string[] }> }
 ) {
   try {
-    const [width, height] = params.dimensions
+    const { dimensions } = await params
+    const [width, height] = dimensions
     
     if (!width || !height) {
       return new NextResponse('Invalid dimensions', { status: 400 })

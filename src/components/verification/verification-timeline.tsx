@@ -264,4 +264,3 @@ export function TrustScoreHistory({ history, className = '' }: TrustScoreHistory
   )
 }
 
-export { VerificationTimelineComponent, TrustScoreHistory }
