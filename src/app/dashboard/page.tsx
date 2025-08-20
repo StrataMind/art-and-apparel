@@ -3,7 +3,9 @@
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ArrowLeft, Package, ShoppingBag, ClipboardList } from 'lucide-react'
 
 export default function Dashboard() {
   const { data: session, status } = useSession()
@@ -32,7 +34,13 @@ export default function Dashboard() {
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Home
+                </Button>
+              </Link>
               <h1 className="text-xl font-semibold text-gray-900">Findora Dashboard</h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -93,18 +101,28 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 <div className="p-4 border border-gray-200 rounded-lg">
-                  <h3 className="font-medium text-gray-900">Browse Products</h3>
+                  <div className="flex items-center mb-2">
+                    <Package className="h-5 w-5 text-blue-600 mr-2" />
+                    <h3 className="font-medium text-gray-900">Browse Products</h3>
+                  </div>
                   <p className="text-sm text-gray-500 mt-1">Explore our product catalog</p>
-                  <Button className="mt-3 w-full" size="sm" variant="outline">
-                    Coming Soon
-                  </Button>
+                  <Link href="/products">
+                    <Button className="mt-3 w-full" size="sm">
+                      Browse Now
+                    </Button>
+                  </Link>
                 </div>
                 <div className="p-4 border border-gray-200 rounded-lg">
-                  <h3 className="font-medium text-gray-900">Order History</h3>
+                  <div className="flex items-center mb-2">
+                    <ClipboardList className="h-5 w-5 text-green-600 mr-2" />
+                    <h3 className="font-medium text-gray-900">Order History</h3>
+                  </div>
                   <p className="text-sm text-gray-500 mt-1">View your past orders</p>
-                  <Button className="mt-3 w-full" size="sm" variant="outline">
-                    Coming Soon
-                  </Button>
+                  <Link href="/orders">
+                    <Button className="mt-3 w-full" size="sm" variant="outline">
+                      View Orders
+                    </Button>
+                  </Link>
                 </div>
                 <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
                   <div className="flex items-center mb-2">
