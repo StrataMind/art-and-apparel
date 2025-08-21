@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Package, ShoppingBag, ClipboardList } from 'lucide-react'
+import { ArrowLeft, Package, ShoppingBag, ClipboardList, Crown } from 'lucide-react'
 
 export default function Dashboard() {
   const { data: session, status } = useSession()
@@ -47,6 +47,15 @@ export default function Dashboard() {
               <span className="text-sm text-gray-700">
                 Welcome, {session.user?.name || session.user?.email}
               </span>
+              {/* @ts-ignore - session.user may have isSuperuser */}
+              {session.user?.isSuperuser && (
+                <Link href="/superuser">
+                  <Button size="sm" className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2">
+                    <Crown className="h-4 w-4" />
+                    Superuser
+                  </Button>
+                </Link>
+              )}
               <Button
                 onClick={() => signOut({ callbackUrl: '/' })}
                 variant="outline"

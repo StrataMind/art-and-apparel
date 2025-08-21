@@ -63,16 +63,38 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.role = user.role
       }
+      
+      // Refresh user data from database for superuser info
+      if (token.sub) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            id: true,
+            role: true,
+            isSuperuser: true,
+            superuserLevel: true
+          }
+        })
+        
+        if (dbUser) {
+          token.role = dbUser.role
+          token.isSuperuser = dbUser.isSuperuser
+          token.superuserLevel = dbUser.superuserLevel
+        }
+      }
+      
       return token
     },
     async session({ token, session }) {
       if (token) {
         session.user.id = token.sub!
         session.user.role = token.role
+        session.user.isSuperuser = token.isSuperuser
+        session.user.superuserLevel = token.superuserLevel
       }
       return session
     },

@@ -48,6 +48,19 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Superuser fields
+  isSuperuser       Boolean         @default(false)
+  superuserLevel    SuperuserLevel?
+  superuserSince    DateTime?
+  grantedBy         String?         // Who gave them superuser access
+  
+  // Permissions
+  canCreateProducts     Boolean     @default(false)
+  canModerateContent    Boolean     @default(false)
+  canViewAnalytics      Boolean     @default(false)
+  canManageUsers        Boolean     @default(false)
+  canFeatureProducts    Boolean     @default(false)
+
   accounts Account[]
   sessions Session[]
   profile  UserProfile?
@@ -55,6 +68,7 @@ model User {
   products Product[]
   orders   Order[]
   reviews  ProductReview[]
+  superuserActivities SuperuserActivity[]
 }
 
 model UserProfile {
@@ -144,6 +158,11 @@ model SellerProfile {
   totalRatings      Int               @default(0)
   totalSales        Int               @default(0)
   
+  // Superuser seller fields
+  isOfficial        Boolean           @default(false)
+  accountType       String            @default("STANDARD") // STANDARD, OFFICIAL, TEAM
+  autoVerified      Boolean           @default(false)      // Skip verification
+  
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   
@@ -186,6 +205,11 @@ model Product {
   // Product Status
   status        ProductStatus  @default(DRAFT)
   featured      Boolean        @default(false)
+  
+  // Superuser product fields
+  isOfficial    Boolean        @default(false)
+  isPromoted    Boolean        @default(false)
+  priority      Priority       @default(NORMAL)
   
   // Seller Info
   sellerId      String
@@ -299,10 +323,30 @@ model ProductReview {
   @@unique([productId, userId]) // One review per user per product
 }
 
+model SuperuserActivity {
+  id          String    @id @default(cuid())
+  userId      String
+  action      String    // "CREATE_PRODUCT", "FEATURE_PRODUCT", etc.
+  target      String?   // Product ID, User ID, etc.
+  details     Json?     // Additional action details
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 enum Role {
   BUYER
   SELLER
   ADMIN
+  SUPERUSER
+  CEO
+}
+
+enum SuperuserLevel {
+  TEAM_MEMBER
+  MANAGER
+  CO_FOUNDER
+  CEO
 }
 
 enum BusinessType {
@@ -362,4 +406,11 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
