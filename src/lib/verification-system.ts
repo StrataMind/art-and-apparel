@@ -78,7 +78,7 @@ export interface VerificationTimeline {
   level?: VerificationLevel
   description: string
   timestamp: Date
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface SellerVerificationProfile {
@@ -339,7 +339,7 @@ class VerificationSystem {
     sellerId: string,
     type: DocumentType,
     file: File,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<VerificationDocument> {
     // TODO: Upload file to storage service
     const document: VerificationDocument = {
@@ -486,7 +486,7 @@ class VerificationSystem {
     
     if (!nextLevel) return false
 
-    const nextBadge = VERIFICATION_BADGES[nextLevel]
+    const _nextBadge = VERIFICATION_BADGES[nextLevel]
     const isEligible = await this.checkLevelRequirements(sellerId, nextLevel)
 
     if (isEligible) {
@@ -613,7 +613,7 @@ class VerificationSystem {
     return currentIndex < levels.length - 1 ? levels[currentIndex + 1] : null
   }
 
-  private isDocumentValid(document: VerificationDocument, validityPeriod: number): boolean {
+  private isDocumentValid(document: VerificationDocument, _validityPeriod: number): boolean {
     if (!document.expiresAt) return true
     return document.expiresAt > new Date()
   }
@@ -642,22 +642,22 @@ class VerificationSystem {
     console.log('Timeline event added:', timelineEvent)
   }
 
-  private async checkVerificationStatus(sellerId: string): Promise<void> {
+  private async checkVerificationStatus(_sellerId: string): Promise<void> {
     // TODO: Implement verification status checking logic
   }
 
-  private async checkPerformanceMetrics(sellerId: string, level: VerificationLevel): Promise<boolean> {
+  private async checkPerformanceMetrics(_sellerId: string, _level: VerificationLevel): Promise<boolean> {
     // TODO: Implement performance metrics checking
     return true // Mock implementation
   }
 
   // Mock database methods (replace with actual database calls)
-  private async getVerificationProfile(sellerId: string): Promise<SellerVerificationProfile | null> {
+  private async getVerificationProfile(_sellerId: string): Promise<SellerVerificationProfile | null> {
     // TODO: Implement database query
     return null
   }
 
-  private async getDocument(documentId: string): Promise<VerificationDocument | null> {
+  private async getDocument(_documentId: string): Promise<VerificationDocument | null> {
     // TODO: Implement database query
     return null
   }

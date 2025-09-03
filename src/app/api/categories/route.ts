@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const parentId = searchParams.get('parentId')
     const search = searchParams.get('search')
 
-    const where: Record<string, any> = {}
+    const where: Record<string, unknown> = {}
 
     // Filter by parent category
     if (parentId === 'null' || parentId === '') {
