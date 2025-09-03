@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { writeFile } from 'fs/promises'
-import path from 'path'
+import { uploadImage } from '@/lib/cloudinary'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,6 +13,7 @@ export async function POST(request: NextRequest) {
 
     const data = await request.formData()
     const file: File | null = data.get('file') as unknown as File
+    const folder = data.get('folder') as string || 'findora'
 
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
@@ -27,46 +27,34 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validate file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024 // 5MB in bytes
+    // Validate file size (10MB limit for Cloudinary)
+    const maxSize = 10 * 1024 * 1024 // 10MB in bytes
     if (file.size > maxSize) {
       return NextResponse.json({ 
-        error: 'File too large. Maximum size is 5MB.' 
+        error: 'File too large. Maximum size is 10MB.' 
       }, { status: 400 })
     }
 
-    // Generate unique filename
-    const timestamp = Date.now()
-    const randomString = Math.random().toString(36).substring(2, 15)
-    const extension = path.extname(file.name)
-    const filename = `${timestamp}_${randomString}${extension}`
-
-    // Convert file to buffer
+    // Convert file to buffer and base64
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    const base64 = `data:${file.type};base64,${buffer.toString('base64')}`
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-    
-    try {
-      // Create the directory
-      const { mkdir } = await import('fs/promises')
-      await mkdir(uploadsDir, { recursive: true })
-    } catch (error) {
-      // Directory might already exist, continue
+    // Upload to Cloudinary
+    const result = await uploadImage(base64, folder)
+
+    if (!result.success) {
+      return NextResponse.json({ 
+        error: result.error || 'Failed to upload image' 
+      }, { status: 500 })
     }
-
-    // Save file
-    const filePath = path.join(uploadsDir, filename)
-    await writeFile(filePath, buffer)
-
-    // Return the public URL
-    const fileUrl = `/uploads/${filename}`
 
     return NextResponse.json({
       success: true,
-      url: fileUrl,
-      filename: filename,
+      url: result.url,
+      publicId: result.publicId,
+      width: result.width,
+      height: result.height,
       size: file.size,
       type: file.type
     })

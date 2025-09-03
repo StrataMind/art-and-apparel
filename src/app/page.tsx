@@ -110,7 +110,7 @@ export default function Home() {
       animate={{ opacity: 1, y: 0 }}
     >
       <div className="relative aspect-square overflow-hidden">
-        {product.images.length > 0 ? (
+        {product.images && product.images.length > 0 ? (
           <img
             src={product.images[0].url}
             alt={product.images[0].altText || product.name}
@@ -142,13 +142,13 @@ export default function Home() {
               {product.name}
             </Link>
           </h3>
-          <p className="text-xs text-gray-500">{product.seller.businessName}</p>
+          <p className="text-xs text-gray-500">{product.seller?.businessName || 'Unknown Seller'}</p>
         </div>
 
         <div className="flex items-center gap-2 mb-3">
-          {renderStars(product.averageRating)}
-          <span className="text-xs text-gray-500">({product.totalReviews})</span>
-          {product.seller.verificationStatus === 'VERIFIED' && (
+          {renderStars(product.averageRating || 0)}
+          <span className="text-xs text-gray-500">({product.totalReviews || 0})</span>
+          {product.seller?.verificationStatus === 'VERIFIED' && (
             <Shield className="h-3 w-3 text-green-500" />
           )}
         </div>

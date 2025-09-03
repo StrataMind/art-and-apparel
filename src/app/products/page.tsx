@@ -254,7 +254,7 @@ export default function ProductsPage() {
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
         <div className="relative">
           <div className="aspect-square overflow-hidden">
-          {product.images.length > 0 ? (
+          {product.images && product.images.length > 0 ? (
             <img
               src={product.images[0].url}
               alt={product.images[0].altText || product.name}
@@ -304,18 +304,18 @@ export default function ProductsPage() {
           >
             {product.name}
           </h3>
-          <p className="text-sm text-gray-600">{product.seller.businessName}</p>
+          <p className="text-sm text-gray-600">{product.seller?.businessName || 'Unknown Seller'}</p>
         </div>
 
         <div className="mb-2">
           <div className="flex items-center space-x-2">
             <div className="flex items-center">
-              {renderStars(product.averageRating)}
+              {renderStars(product.averageRating || 0)}
               <span className="ml-1 text-sm text-gray-600">
-                ({product.totalReviews})
+                ({product.totalReviews || 0})
               </span>
             </div>
-            {product.seller.verificationStatus === 'VERIFIED' && (
+            {product.seller?.verificationStatus === 'VERIFIED' && (
               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                 Verified
               </span>
