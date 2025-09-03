@@ -12,7 +12,8 @@ const loginSchema = z.object({
 })
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  // Temporarily disable adapter to test OAuth flow
+  // adapter: PrismaAdapter(db),
   session: {
     strategy: 'jwt',
   },
@@ -20,7 +21,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
     error: '/auth/signin', // Redirect errors back to sign-in page
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: true, // Force debug mode to see detailed logs
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -75,12 +76,18 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
+      console.log('🔄 SignIn callback triggered')
+      console.log('Environment check:')
+      console.log('- NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
+      console.log('- NEXTAUTH_SECRET:', process.env.NEXTAUTH_SECRET ? 'SET' : 'MISSING')
+      console.log('- GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 'MISSING')
+      
       try {
         console.log('=== SIGNIN CALLBACK ===')
-        console.log('User:', user)
-        console.log('Account:', account)
+        console.log('User:', JSON.stringify(user, null, 2))
+        console.log('Account:', JSON.stringify(account, null, 2))
         console.log('Provider:', account?.provider)
-        console.log('Profile:', profile)
+        console.log('Profile:', JSON.stringify(profile, null, 2))
         
         // Always allow OAuth sign ins
         if (account?.provider === 'google') {
@@ -98,6 +105,7 @@ export const authOptions: NextAuthOptions = {
         return true
       } catch (error) {
         console.error('❌ SignIn callback error:', error)
+        console.error('Error details:', JSON.stringify(error, null, 2))
         return false
       }
     },
