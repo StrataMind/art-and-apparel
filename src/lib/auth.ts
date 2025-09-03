@@ -12,7 +12,7 @@ const loginSchema = z.object({
 })
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  // Remove PrismaAdapter - causes issues on Vercel
   session: {
     strategy: 'jwt',
   },
