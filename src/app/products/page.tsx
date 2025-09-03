@@ -1,7 +1,9 @@
 'use client'
 
-// Force dynamic rendering
+// Force dynamic rendering for all pages
 export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+export const revalidate = 0
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'

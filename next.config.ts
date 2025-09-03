@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
   },
+  // Disable static optimization to prevent build errors
+  generateStaticParams: false,
+  // Force all pages to be dynamic
+  trailingSlash: false,
 };
 
 export default nextConfig;
