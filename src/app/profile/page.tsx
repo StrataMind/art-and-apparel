@@ -115,7 +115,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <BackButton href="/dashboard" label="Back to Dashboard" />
+          <BackButton href="/" label="Back to Home" />
         </div>
         
         <div className="bg-white shadow rounded-lg">
