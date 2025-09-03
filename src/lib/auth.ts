@@ -73,25 +73,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Always redirect to home page after successful auth
-      if (url.includes('/auth/') || url.includes('/api/auth/')) {
-        return baseUrl
-      }
-      
-      // For relative URLs, construct full URL
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`
-      }
-      
-      // For same origin URLs
-      try {
-        if (new URL(url).origin === baseUrl) {
-          return url
-        }
-      } catch (e) {
-        // Invalid URL, default to home
-      }
-      
+      // Always redirect to home page (/) after any auth operation
       return baseUrl
     },
     async jwt({ token, user }) {
