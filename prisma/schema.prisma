@@ -69,6 +69,7 @@ model User {
   products Product[]
   orders   Order[]
   reviews  ProductReview[]
+  cart     Cart?
   superuserActivities SuperuserActivity[]
 }
 
@@ -233,6 +234,7 @@ model Product {
   category      Category?      @relation(fields: [categoryId], references: [id])
   orderItems    OrderItem[]
   reviews       ProductReview[]
+  cartItems     CartItem[]
 }
 
 model ProductImage {
@@ -414,4 +416,29 @@ enum Priority {
   NORMAL
   HIGH
   URGENT
+}
+
+// Shopping Cart Models
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([cartId, productId])
 }
