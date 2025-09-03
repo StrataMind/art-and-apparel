@@ -63,6 +63,25 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // Allow all OAuth and credential sign ins
+      return true
+    },
+    async redirect({ url, baseUrl }) {
+      // Always redirect to home page after successful sign in
+      if (url.startsWith("/auth/signin") || url.startsWith("/api/auth")) {
+        return baseUrl
+      }
+      // Allow relative callback URLs
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`
+      }
+      // Allow callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) {
+        return url
+      }
+      return baseUrl
+    },
     async jwt({ token, user, trigger }) {
       if (user) {
         token.role = user.role
