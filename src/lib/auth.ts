@@ -20,15 +20,18 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
     error: '/auth/signin', // Redirect errors back to sign-in page
   },
+  debug: process.env.NODE_ENV === 'development',
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: 'BUYER' // Default role for new users
         }
       }
     }),
@@ -71,24 +74,30 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, email, credentials }) {
       try {
+        console.log('=== SIGNIN CALLBACK ===')
+        console.log('User:', user)
+        console.log('Account:', account)
+        console.log('Provider:', account?.provider)
+        console.log('Profile:', profile)
+        
         // Always allow OAuth sign ins
         if (account?.provider === 'google') {
-          console.log('Google OAuth sign in attempt:', user?.email)
+          console.log('✅ Google OAuth sign in successful for:', user?.email)
           return true
         }
         
         // Always allow credential sign ins
         if (account?.provider === 'credentials') {
-          console.log('Credentials sign in attempt:', user?.email)
+          console.log('✅ Credentials sign in successful for:', user?.email)
           return true
         }
         
-        console.log('Sign in attempt with provider:', account?.provider)
+        console.log('✅ Generic sign in successful with provider:', account?.provider)
         return true
       } catch (error) {
-        console.error('SignIn callback error:', error)
+        console.error('❌ SignIn callback error:', error)
         return false
       }
     },
