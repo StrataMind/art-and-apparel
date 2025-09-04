@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { makeSuperuser, getSuperuserPermissions, removeSuperuser } from '@/lib/superuser'
 import { makeSuperuserSchema } from '@/lib/validations/superuser'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get fresh user data to verify superuser status
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: {
         id: true,
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const { email, level } = makeSuperuserSchema.parse(body)
 
     // Find the target user
-    const targetUser = await prisma.user.findUnique({
+    const targetUser = await db.user.findUnique({
       where: { email },
       select: { id: true, name: true, email: true, isSuperuser: true }
     })
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get fresh user data to verify superuser status
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: {
         id: true,
@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get all superusers
-    const superusers = await prisma.user.findMany({
+    const superusers = await db.user.findMany({
       where: { isSuperuser: true },
       select: {
         id: true,
@@ -179,7 +179,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Only CEO can remove superusers
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: {
         id: true,

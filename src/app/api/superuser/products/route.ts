@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { createSuperuserProduct, getSuperuserPermissions } from '@/lib/superuser'
 import { superuserProductSchema } from '@/lib/validations/superuser'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get fresh user data to verify superuser status
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: {
         id: true,
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get fresh user data to verify superuser status
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: {
         id: true,
@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get all products created by this superuser
-    const products = await prisma.product.findMany({
+    const products = await db.product.findMany({
       where: { sellerUserId: user.id },
       include: {
         images: true,

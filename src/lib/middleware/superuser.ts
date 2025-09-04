@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getSuperuserPermissions, SuperuserPermissions } from '@/lib/superuser'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 
 export interface SuperuserRequest extends NextRequest {
   user?: {
@@ -29,7 +29,7 @@ export async function requireSuperuser(req: NextRequest) {
   }
 
   // Get fresh user data from database
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
