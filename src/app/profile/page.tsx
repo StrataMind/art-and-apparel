@@ -43,6 +43,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [userStatus, setUserStatus] = useState<any>(null)
 
   const {
     register,
@@ -57,6 +58,24 @@ export default function ProfilePage() {
   })
 
   const newPassword = watch("newPassword")
+
+  useEffect(() => {
+    if (session?.user) {
+      loadUserStatus()
+    }
+  }, [session])
+
+  const loadUserStatus = async () => {
+    try {
+      const response = await fetch('/api/user/status')
+      if (response.ok) {
+        const data = await response.json()
+        setUserStatus(data.user)
+      }
+    } catch (error) {
+      console.error('Error loading user status:', error)
+    }
+  }
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true)
@@ -157,6 +176,26 @@ export default function ProfilePage() {
                   {errors.name && (
                     <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
                   )}
+                </div>
+
+                <div>
+                  <Label>Role</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      type="text"
+                      value={userStatus?.role || session?.user?.role || "BUYER"}
+                      disabled
+                      className="bg-gray-50"
+                    />
+                    {userStatus?.isSuperuser && (
+                      <div className="flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                        👑 {userStatus.superuserLevel}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {userStatus?.isSuperuser ? "You have superuser privileges" : "Your account role"}
+                  </p>
                 </div>
               </div>
             </div>
