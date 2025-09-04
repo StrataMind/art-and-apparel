@@ -88,12 +88,35 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role || 'BUYER'
       }
+      
+      // Get fresh user data from database on each token refresh
+      if (token.email) {
+        const dbUser = await db.user.findUnique({
+          where: { email: token.email },
+          select: {
+            id: true,
+            role: true,
+            isSuperuser: true,
+            superuserLevel: true
+          }
+        })
+        
+        if (dbUser) {
+          token.userId = dbUser.id
+          token.role = dbUser.role
+          token.isSuperuser = dbUser.isSuperuser
+          token.superuserLevel = dbUser.superuserLevel
+        }
+      }
+      
       return token
     },
     async session({ token, session }) {
       if (token) {
-        session.user.id = token.sub!
+        session.user.id = token.userId || token.sub!
         session.user.role = token.role
+        session.user.isSuperuser = token.isSuperuser
+        session.user.superuserLevel = token.superuserLevel
       }
       return session
     },

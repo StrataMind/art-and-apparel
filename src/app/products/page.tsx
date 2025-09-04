@@ -13,7 +13,8 @@ import {
   Star,
   ShoppingCart,
   Heart,
-  Eye
+  Eye,
+  Package
 } from 'lucide-react'
 import BackButton from '@/components/ui/back-button'
 
