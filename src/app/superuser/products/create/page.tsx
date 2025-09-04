@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getSuperuserPermissions } from '@/lib/superuser'
 import { SuperuserProductForm } from '@/components/superuser/product-form'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 import { Package, ArrowLeft, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,7 @@ export default async function SuperuserCreateProductPage() {
   }
 
   // Get fresh user data to check superuser status
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
@@ -43,7 +43,7 @@ export default async function SuperuserCreateProductPage() {
   }
 
   // Get categories for the form
-  const categories = await prisma.category.findMany({
+  const categories = await db.category.findMany({
     select: {
       id: true,
       name: true,
