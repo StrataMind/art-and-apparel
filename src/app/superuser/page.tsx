@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getSuperuserPermissions, getSuperuserStats } from '@/lib/superuser'
 import { SuperuserDashboard } from '@/components/superuser/dashboard'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 import { Shield, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,7 @@ export default async function SuperuserPage() {
   }
 
   // Get fresh user data to check superuser status
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,

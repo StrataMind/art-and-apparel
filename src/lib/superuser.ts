@@ -1,5 +1,5 @@
 import { User, SuperuserLevel, Priority } from '@prisma/client'
-import { prisma } from '@/lib/prisma'
+import { db as prisma } from '@/lib/db'
 
 export interface SuperuserPermissions {
   canCreateProducts: boolean
