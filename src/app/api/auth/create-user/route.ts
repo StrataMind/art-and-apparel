@@ -5,10 +5,28 @@ import { db } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
+    console.log('Create-user endpoint called')
+    
     const session = await getServerSession(authOptions)
+    console.log('Session obtained:', !!session?.user?.email)
     
     if (!session?.user?.email) {
+      console.log('No session found, returning 401')
       return NextResponse.json({ error: 'No session found' }, { status: 401 })
+    }
+
+    console.log('Checking for existing user:', session.user.email)
+    
+    // Test database connection first
+    try {
+      await db.$queryRaw`SELECT 1 as test`
+      console.log('Database connection successful')
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError)
+      return NextResponse.json({ 
+        error: 'Database connection failed', 
+        details: dbError instanceof Error ? dbError.message : 'Unknown error'
+      }, { status: 500 })
     }
 
     // Check if user already exists in database
@@ -16,10 +34,13 @@ export async function POST(req: NextRequest) {
       where: { email: session.user.email }
     }).catch(error => {
       console.error('Database findUnique error:', error)
+      console.error('Error details:', error.message, error.code)
       return null
     })
 
     if (!existingUser) {
+      console.log('User not found, creating new user')
+      
       // Create new user from session data
       const newUser = await db.user.create({
         data: {
@@ -31,8 +52,11 @@ export async function POST(req: NextRequest) {
         }
       }).catch(error => {
         console.error('Database create error:', error)
-        throw new Error('Failed to create user in database')
+        console.error('Create error details:', error.message, error.code)
+        throw new Error(`Failed to create user in database: ${error.message}`)
       })
+
+      console.log('User created successfully:', newUser.id)
 
       return NextResponse.json({ 
         success: true, 
@@ -46,6 +70,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    console.log('User already exists:', existingUser.id)
     return NextResponse.json({ 
       success: true, 
       message: 'User already exists',

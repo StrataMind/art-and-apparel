@@ -5,10 +5,26 @@ import { db } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('User status endpoint called')
+    
     const session = await getServerSession(authOptions)
+    console.log('Session obtained:', !!session?.user?.email)
     
     if (!session?.user?.email) {
+      console.log('No session found, returning 401')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Test database connection first
+    try {
+      await db.$queryRaw`SELECT 1 as test`
+      console.log('Database connection successful')
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError)
+      return NextResponse.json({ 
+        error: 'Database connection failed', 
+        details: dbError instanceof Error ? dbError.message : 'Unknown error'
+      }, { status: 500 })
     }
 
     // Get fresh user data from database
