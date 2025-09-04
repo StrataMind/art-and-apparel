@@ -63,8 +63,7 @@ export default function Dashboard() {
               <span className="text-sm text-gray-700">
                 Welcome, {session.user?.name || session.user?.email}
               </span>
-              {/* @ts-ignore - session.user may have isSuperuser */}
-              {session.user?.isSuperuser && (
+              {userStatus?.isSuperuser && (
                 <Link href="/superuser">
                   <Button size="sm" className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2">
                     <Crown className="h-4 w-4" />
@@ -100,7 +99,14 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Role</label>
-                  <p className="mt-1 text-sm text-gray-900">{session.user?.role}</p>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {userStatus?.role || session.user?.role || 'Loading...'}
+                    {userStatus?.isSuperuser && (
+                      <span className="ml-2 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">
+                        CEO
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">User ID</label>

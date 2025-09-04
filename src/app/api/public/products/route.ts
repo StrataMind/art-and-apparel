@@ -53,6 +53,11 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
+    // Add detailed logging
+    console.log('Products API - Query params:', { page, limit, featured, search, category, sortBy, sortOrder })
+    console.log('Products API - Where clause:', JSON.stringify(where, null, 2))
+    console.log('Products API - Order by:', JSON.stringify(orderBy, null, 2))
+
     const [products, total] = await Promise.all([
       db.product.findMany({
         where,
@@ -84,14 +89,19 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit
       }).catch(error => {
-        console.error('Database query error:', error)
+        console.error('Database findMany error - Details:', error)
+        console.error('Database findMany error - Message:', error.message)
+        console.error('Database findMany error - Code:', error.code)
         return [] // Return empty array if query fails
       }),
       db.product.count({ where }).catch(error => {
-        console.error('Database count error:', error)
+        console.error('Database count error - Details:', error)
+        console.error('Database count error - Message:', error.message)
         return 0 // Return 0 if count fails
       })
     ])
+
+    console.log('Products API - Results:', { productsFound: products.length, total })
 
     // Transform data to match frontend expectations
     const transformedProducts = products.map(product => ({
