@@ -1,31 +1,29 @@
 import { PrismaClient } from '@prisma/client'
-import { neon } from '@neondatabase/serverless'
-import { PrismaNeon } from '@prisma/adapter-neon'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 function createPrismaClient() {
-  const databaseUrl = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL
+  const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL
   
-  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
-    // Use Neon adapter in production/Vercel (serverless)
-    if (!databaseUrl) {
-      throw new Error('DATABASE_URL or POSTGRES_PRISMA_URL must be set for production')
-    }
-    const neonClient = neon(databaseUrl)
-    const adapter = new PrismaNeon(neonClient)
-    return new PrismaClient({ 
-      adapter,
-      log: ['error', 'warn']
-    } as any)
-  } else {
-    // Use regular Prisma in development
-    return new PrismaClient({
-      log: ['query'],
-    })
+  if (!databaseUrl) {
+    console.error('No database URL found!')
+    console.error('DATABASE_URL:', !!process.env.DATABASE_URL)
+    console.error('POSTGRES_PRISMA_URL:', !!process.env.POSTGRES_PRISMA_URL)
+    throw new Error('DATABASE_URL must be set')
   }
+
+  console.log('Creating Prisma client with database URL:', databaseUrl.substring(0, 50) + '...')
+  
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: databaseUrl
+      }
+    },
+    log: ['error', 'warn', 'info'],
+  })
 }
 
 export const db = globalForPrisma.prisma ?? createPrismaClient()
