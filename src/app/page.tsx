@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useRecommendations, Product } from '@/lib/recommendations'
+import { CartButton } from '@/components/cart/cart-button'
+import { AddToCartButton } from '@/components/cart/add-to-cart-button'
 import { 
   Search, 
   Star, 
@@ -189,11 +191,17 @@ export default function Home() {
               </span>
             )}
           </div>
-          <Link href={`/products/${product.slug}`}>
-            <Button size="sm" className="h-8 px-3 text-xs">
-              View
-            </Button>
-          </Link>
+          <AddToCartButton 
+            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              slug: product.slug,
+              images: product.images
+            }}
+            size="sm" 
+            className="h-8 px-3 text-xs"
+          />
         </div>
       </div>
     </motion.div>
@@ -232,6 +240,7 @@ export default function Home() {
                   <span className="text-sm text-gray-600 hidden sm:block">
                     {session.user?.name || session.user?.email}
                   </span>
+                  <CartButton />
                   <Link href="/dashboard">
                     <Button size="sm">Dashboard</Button>
                   </Link>

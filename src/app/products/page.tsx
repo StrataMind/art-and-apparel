@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import BackButton from '@/components/ui/back-button'
 import { SmartCreateButton } from '@/components/products/smart-create-button'
+import { AddToCartButton } from '@/components/cart/add-to-cart-button'
 
 interface Product {
   id: string
@@ -268,6 +269,17 @@ function ProductsContent() {
                             </span>
                           )}
                         </div>
+                        <AddToCartButton 
+                          product={{
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            slug: product.slug,
+                            images: product.images
+                          }}
+                          size="sm"
+                          className="text-xs"
+                        />
                       </div>
                     </div>
                   </>
@@ -308,15 +320,28 @@ function ProductsContent() {
                             {product._count.orderItems} sold
                           </span>
                         </div>
-                        <div className="text-right">
-                          <div className="text-lg font-bold text-gray-900">
-                            {formatPrice(product.price)}
-                          </div>
-                          {product.compareAtPrice && (
-                            <div className="text-sm text-gray-500 line-through">
-                              {formatPrice(product.compareAtPrice)}
+                        <div className="text-right flex flex-col items-end gap-2">
+                          <div>
+                            <div className="text-lg font-bold text-gray-900">
+                              {formatPrice(product.price)}
                             </div>
-                          )}
+                            {product.compareAtPrice && (
+                              <div className="text-sm text-gray-500 line-through">
+                                {formatPrice(product.compareAtPrice)}
+                              </div>
+                            )}
+                          </div>
+                          <AddToCartButton 
+                            product={{
+                              id: product.id,
+                              name: product.name,
+                              price: product.price,
+                              slug: product.slug,
+                              images: product.images
+                            }}
+                            size="sm"
+                            className="text-xs"
+                          />
                         </div>
                       </div>
                     </div>
