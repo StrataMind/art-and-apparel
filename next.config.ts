@@ -14,13 +14,14 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   output: 'standalone',
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs'],
-  },
-  // Disable static optimization to prevent build errors
-  generateStaticParams: false,
-  // Force all pages to be dynamic
+  // Move serverComponentsExternalPackages out of experimental
+  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
+  // Force all pages to be dynamic to prevent prerender errors
   trailingSlash: false,
+  // Disable static generation for problematic routes
+  async generateStaticParams() {
+    return []
+  },
 };
 
 export default nextConfig;
