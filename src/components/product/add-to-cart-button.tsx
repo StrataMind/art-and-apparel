@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/contexts/cart-context'
 import QuantitySelector from '@/components/ui/quantity-selector'
@@ -39,8 +40,10 @@ export default function AddToCartButton({
   disabled = false,
   className = ''
 }: AddToCartButtonProps) {
-  const { addItem, openCart } = useCart()
-  const { quantity: cartQuantity, isInCart } = useCartItem(product.id)
+  const router = useRouter()
+  const { addItem, getItemQuantity, isItemInCart } = useCart()
+  const cartQuantity = getItemQuantity(product.id)
+  const isInCart = isItemInCart(product.id)
   const [selectedQuantity, setSelectedQuantity] = useState(1)
   const [isAdding, setIsAdding] = useState(false)
   const [stockValidated, setStockValidated] = useState(true)
@@ -123,7 +126,7 @@ export default function AddToCartButton({
 
   const handleBuyNow = async () => {
     await handleAddToCart()
-    openCart()
+    router.push('/cart')
   }
 
   if (isInactive) {
@@ -190,7 +193,7 @@ export default function AddToCartButton({
             <Button
               variant="ghost"
               size="sm"
-              onClick={openCart}
+              onClick={() => router.push('/cart')}
               className="text-blue-600 hover:text-blue-800 p-0 h-auto"
             >
               View Cart

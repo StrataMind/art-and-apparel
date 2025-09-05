@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Header from '@/components/navigation/header'
 import AddToCartButton from '@/components/product/add-to-cart-button'
 import { useCart } from '@/contexts/cart-context'
@@ -65,10 +66,13 @@ const sampleProducts = [
 ]
 
 export default function CartDemoPage() {
-  const { state, clearCart, openCart, getFreeShippingProgress } = useCart()
+  const router = useRouter()
+  const { state, clearCart } = useCart()
   const [selectedProduct, setSelectedProduct] = useState(0)
 
-  const freeShippingProgress = getFreeShippingProgress()
+  // Calculate free shipping progress (assuming free shipping at $50)
+  const freeShippingThreshold = 50
+  const freeShippingProgress = Math.min(100, (state.totalPrice / freeShippingThreshold) * 100)
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -98,7 +102,7 @@ export default function CartDemoPage() {
                 Cart Status
               </h2>
               <div className="flex items-center space-x-4">
-                <Button onClick={openCart} variant="outline">
+                <Button onClick={() => router.push('/cart')} variant="outline">
                   Open Cart ({state.totalItems})
                 </Button>
                 {state.items.length > 0 && (

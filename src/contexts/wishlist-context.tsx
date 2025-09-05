@@ -198,7 +198,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
                 toast.warning(`${currentItem.name} is now out of stock`, {
                   action: {
                     label: 'View Wishlist',
-                    onClick: () => window.location.href = '/wishlist'
+                    onClick: () => {
+                      if (typeof window !== 'undefined') {
+                        window.location.href = '/wishlist'
+                      }
+                    }
                   }
                 })
               }
@@ -223,7 +227,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     toast.success(`${item.name} added to wishlist`, {
       action: {
         label: 'View Wishlist',
-        onClick: () => window.location.href = '/wishlist'
+        onClick: () => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/wishlist'
+          }
+        }
       }
     })
 
@@ -292,7 +300,9 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       // For demo purposes, we'll use localStorage with a special key
       localStorage.setItem(`findora_shared_wishlist_${wishlistId}`, JSON.stringify(shareableWishlist))
 
-      const shareUrl = `${window.location.origin}/wishlist/shared/${wishlistId}`
+      const shareUrl = typeof window !== 'undefined' 
+        ? `${window.location.origin}/wishlist/shared/${wishlistId}`
+        : `/wishlist/shared/${wishlistId}`
 
       // Try to use Web Share API if available
       if (navigator.share) {

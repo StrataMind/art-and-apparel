@@ -166,7 +166,11 @@ export default function Dashboard() {
                   <Button 
                     className="mt-3 w-full" 
                     size="sm"
-                    onClick={() => window.location.href = '/seller/register'}
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        window.location.href = '/seller/register'
+                      }
+                    }}
                   >
                     Get Started
                   </Button>
