@@ -9,15 +9,20 @@ import { Toaster as Sonner } from "sonner";
 import { CartProvider } from "@/contexts/cart-context";
 import { WishlistProvider } from "@/contexts/wishlist-context";
 import CartSidebar from "@/components/cart/cart-sidebar";
+import ErrorBoundary from "@/components/error-boundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap',
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap',
+  preload: false, // Only preload primary font
 });
 
 export const metadata: Metadata = {
@@ -50,16 +55,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
-          <WishlistProvider>
-            <CartProvider>
-              {children}
-              <CartSidebar />
-              <Toaster />
-              <Sonner position="top-right" />
-            </CartProvider>
-          </WishlistProvider>
-        </Providers>
+        <ErrorBoundary>
+          <Providers>
+            <WishlistProvider>
+              <CartProvider>
+                {children}
+                <CartSidebar />
+                <Toaster />
+                <Sonner position="top-right" />
+              </CartProvider>
+            </WishlistProvider>
+          </Providers>
+        </ErrorBoundary>
       </body>
     </html>
   );

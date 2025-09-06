@@ -15,6 +15,11 @@ interface CartState {
   items: CartItem[]
   totalItems: number
   totalPrice: number
+  subtotal: number
+  tax: number
+  shipping: number
+  discount: number
+  isOpen: boolean
 }
 
 type CartAction =
@@ -23,11 +28,19 @@ type CartAction =
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' }
   | { type: 'LOAD_CART'; payload: CartItem[] }
+  | { type: 'TOGGLE_CART' }
+  | { type: 'OPEN_CART' }
+  | { type: 'CLOSE_CART' }
 
 const initialState: CartState = {
   items: [],
   totalItems: 0,
-  totalPrice: 0
+  totalPrice: 0,
+  subtotal: 0,
+  tax: 0,
+  shipping: 0,
+  discount: 0,
+  isOpen: false
 }
 
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -47,23 +60,38 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       }
 
       const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0)
-      const totalPrice = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const tax = subtotal * 0.08 // 8% tax
+      const shipping = subtotal >= 50 ? 0 : 5 // Free shipping over $50
+      const totalPrice = subtotal + tax + shipping
 
       return {
+        ...state,
         items: newItems,
         totalItems,
-        totalPrice
+        subtotal,
+        tax,
+        shipping,
+        totalPrice,
+        isOpen: true // Open cart when item added
       }
     }
 
     case 'REMOVE_ITEM': {
       const newItems = state.items.filter(item => item.id !== action.payload)
       const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0)
-      const totalPrice = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const tax = subtotal * 0.08
+      const shipping = subtotal >= 50 ? 0 : (subtotal > 0 ? 5 : 0)
+      const totalPrice = subtotal + tax + shipping
 
       return {
+        ...state,
         items: newItems,
         totalItems,
+        subtotal,
+        tax,
+        shipping,
         totalPrice
       }
     }
@@ -76,28 +104,51 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       ).filter(item => item.quantity > 0)
 
       const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0)
-      const totalPrice = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const tax = subtotal * 0.08
+      const shipping = subtotal >= 50 ? 0 : (subtotal > 0 ? 5 : 0)
+      const totalPrice = subtotal + tax + shipping
 
       return {
+        ...state,
         items: newItems,
         totalItems,
+        subtotal,
+        tax,
+        shipping,
         totalPrice
       }
     }
 
     case 'CLEAR_CART':
-      return initialState
+      return { ...initialState, isOpen: state.isOpen }
 
     case 'LOAD_CART': {
       const totalItems = action.payload.reduce((sum, item) => sum + item.quantity, 0)
-      const totalPrice = action.payload.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const subtotal = action.payload.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      const tax = subtotal * 0.08
+      const shipping = subtotal >= 50 ? 0 : (subtotal > 0 ? 5 : 0)
+      const totalPrice = subtotal + tax + shipping
 
       return {
+        ...state,
         items: action.payload,
         totalItems,
+        subtotal,
+        tax,
+        shipping,
         totalPrice
       }
     }
+
+    case 'TOGGLE_CART':
+      return { ...state, isOpen: !state.isOpen }
+
+    case 'OPEN_CART':
+      return { ...state, isOpen: true }
+
+    case 'CLOSE_CART':
+      return { ...state, isOpen: false }
 
     default:
       return state
@@ -112,30 +163,56 @@ interface CartContextType {
   clearCart: () => void
   getItemQuantity: (id: string) => number
   isItemInCart: (id: string) => boolean
+  toggleCart: () => void
+  openCart: () => void
+  closeCart: () => void
+  getFreeShippingProgress: () => { qualified: boolean; current: number; target: number; remaining: number }
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState)
+  const [isHydrated, setIsHydrated] = React.useState(false)
 
-  // Load cart from localStorage on mount
+  // Handle hydration and load cart from localStorage
   useEffect(() => {
-    const savedCart = localStorage.getItem('findora-cart')
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart)
-        dispatch({ type: 'LOAD_CART', payload: parsedCart })
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error)
+    setIsHydrated(true)
+    
+    // Only access localStorage after hydration
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem('findora-cart')
+      if (savedCart) {
+        try {
+          const parsedCart = JSON.parse(savedCart)
+          if (Array.isArray(parsedCart)) {
+            dispatch({ type: 'LOAD_CART', payload: parsedCart })
+          }
+        } catch (error) {
+          // Silently handle localStorage errors in production
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error loading cart from localStorage:', error)
+          }
+          // Clear invalid data
+          localStorage.removeItem('findora-cart')
+        }
       }
     }
   }, [])
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to localStorage whenever it changes (only after hydration)
   useEffect(() => {
-    localStorage.setItem('findora-cart', JSON.stringify(state.items))
-  }, [state.items])
+    if (isHydrated && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('findora-cart', JSON.stringify(state.items))
+      } catch (error) {
+        // Handle localStorage errors gracefully
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error saving cart to localStorage:', error)
+        }
+      }
+    }
+  }, [state.items, isHydrated])
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     dispatch({ type: 'ADD_ITEM', payload: item })
@@ -162,6 +239,32 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return state.items.some(item => item.id === id)
   }
 
+  const toggleCart = () => {
+    dispatch({ type: 'TOGGLE_CART' })
+  }
+
+  const openCart = () => {
+    dispatch({ type: 'OPEN_CART' })
+  }
+
+  const closeCart = () => {
+    dispatch({ type: 'CLOSE_CART' })
+  }
+
+  const getFreeShippingProgress = () => {
+    const target = 50 // $50 for free shipping
+    const current = state.subtotal
+    const remaining = Math.max(0, target - current)
+    const qualified = current >= target
+
+    return {
+      qualified,
+      current,
+      target,
+      remaining
+    }
+  }
+
   return (
     <CartContext.Provider value={{
       state,
@@ -170,7 +273,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       updateQuantity,
       clearCart,
       getItemQuantity,
-      isItemInCart
+      isItemInCart,
+      toggleCart,
+      openCart,
+      closeCart,
+      getFreeShippingProgress
     }}>
       {children}
     </CartContext.Provider>

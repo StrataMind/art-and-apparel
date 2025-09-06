@@ -142,32 +142,45 @@ const STORAGE_KEY = 'findora_wishlist'
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(wishlistReducer, initialState)
+  const [isHydrated, setIsHydrated] = React.useState(false)
 
-  // Load wishlist from localStorage on mount
+  // Handle hydration and load wishlist from localStorage  
   useEffect(() => {
+    setIsHydrated(true)
+    
     if (typeof window !== 'undefined') {
       try {
         const savedWishlist = localStorage.getItem(STORAGE_KEY)
         if (savedWishlist) {
           const items: WishlistItem[] = JSON.parse(savedWishlist)
-          dispatch({ type: 'LOAD_WISHLIST', payload: items })
+          if (Array.isArray(items)) {
+            dispatch({ type: 'LOAD_WISHLIST', payload: items })
+          }
         }
       } catch (error) {
-        console.error('Error loading wishlist from localStorage:', error)
+        // Handle errors gracefully in production
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error loading wishlist from localStorage:', error)
+        }
+        // Clear invalid data
+        localStorage.removeItem(STORAGE_KEY)
       }
     }
   }, [])
 
-  // Save wishlist to localStorage whenever it changes
+  // Save wishlist to localStorage whenever it changes (only after hydration)
   useEffect(() => {
-    if (typeof window !== 'undefined' && state.items.length >= 0) {
+    if (isHydrated && typeof window !== 'undefined') {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items))
       } catch (error) {
-        console.error('Error saving wishlist to localStorage:', error)
+        // Handle localStorage errors gracefully
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error saving wishlist to localStorage:', error)
+        }
       }
     }
-  }, [state.items])
+  }, [state.items, isHydrated])
 
   // Periodically check stock status for wishlist items
   useEffect(() => {
