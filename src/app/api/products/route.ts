@@ -3,32 +3,24 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { z } from 'zod'
-
-const productSchema = z.object({
-  name: z.string().min(1, 'Product name is required').max(200, 'Product name too long'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  price: z.number().min(0.01, 'Price must be greater than 0'),
-  compareAtPrice: z.number().min(0).optional(),
-  sku: z.string().optional(),
-  inventory: z.number().int().min(0, 'Inventory cannot be negative'),
-  weight: z.number().min(0).optional(),
-  dimensions: z.string().optional(),
-  categoryId: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE', 'OUT_OF_STOCK']).default('DRAFT'),
-  featured: z.boolean().default(false),
-  images: z.array(z.object({
-    url: z.string(),
-    altText: z.string().optional(),
-    position: z.number().default(0)
-  })).default([]),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
-})
+import { secureProductSchema } from '@/lib/validation'
+import { apiRateLimit, getRateLimitIdentifier } from '@/lib/rate-limit'
+import { handleApiError, createSecureError } from '@/lib/error-handler'
 
 // Create Product
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const identifier = getRateLimitIdentifier(request)
+    const rateLimitResult = apiRateLimit(identifier)
+    
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -47,7 +39,25 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const validatedData = productSchema.parse(body)
+    
+    // Extended validation schema for products
+    const extendedProductSchema = secureProductSchema.extend({
+      compareAtPrice: z.number().min(0).optional(),
+      weight: z.number().min(0).max(1000).optional(),
+      dimensions: z.string().max(100).optional(),
+      categoryId: z.string().uuid().optional(),
+      status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE', 'OUT_OF_STOCK']).default('DRAFT'),
+      featured: z.boolean().default(false),
+      images: z.array(z.object({
+        url: z.string().url('Invalid image URL'),
+        altText: z.string().max(200).optional(),
+        position: z.number().int().min(0).default(0)
+      })).max(10, 'Too many images').default([]),
+      metaTitle: z.string().max(60).optional(),
+      metaDescription: z.string().max(160).optional(),
+    })
+    
+    const validatedData = extendedProductSchema.parse(body)
 
     // Generate slug from name
     const baseSlug = validatedData.name
@@ -110,19 +120,8 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Product creation error:', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const secureError = handleApiError(error)
+    return NextResponse.json(secureError, { status: secureError.statusCode })
   }
 }
 
@@ -201,10 +200,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Get products error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const secureError = handleApiError(error)
+    return NextResponse.json(secureError, { status: secureError.statusCode })
   }
 }

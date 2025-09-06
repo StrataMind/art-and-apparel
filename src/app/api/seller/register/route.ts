@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { authOptions } from '@/lib/auth'
+import { strictRateLimit, getRateLimitIdentifier } from '@/lib/rate-limit'
 
 const sellerRegistrationSchema = z.object({
   // Business Information
@@ -56,6 +57,25 @@ const sellerRegistrationSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting for seller registrations
+    const identifier = getRateLimitIdentifier(request)
+    const rateLimitResult = strictRateLimit(identifier)
+    
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { 
+          message: 'Too many seller registration attempts. Please try again later.',
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
+
     // Check authentication
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -66,11 +86,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    console.log('Seller registration request body:', JSON.stringify(body, null, 2))
     const validatedFields = sellerRegistrationSchema.safeParse(body)
 
     if (!validatedFields.success) {
-      console.log('Validation failed:', validatedFields.error.flatten())
       return NextResponse.json(
         { 
           message: 'Invalid input', 
@@ -155,7 +173,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Seller registration error:', error)
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
