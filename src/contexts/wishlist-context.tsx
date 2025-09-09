@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
 import { toast } from 'sonner'
+import { trackAddToWishlist } from '@/lib/analytics'
 
 export interface WishlistItem {
   id: string
@@ -248,18 +249,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       }
     })
 
-    // Track wishlist addition
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'add_to_wishlist', {
-        currency: 'USD',
-        value: item.price,
-        items: [{
-          item_id: item.productId,
-          item_name: item.name,
-          price: item.price
-        }]
-      })
-    }
+    // Track wishlist addition with comprehensive analytics
+    trackAddToWishlist({
+      item_id: item.productId,
+      item_name: item.name,
+      item_category: item.category?.name,
+      price: item.price,
+      currency: 'USD'
+    })
   }
 
   const removeItem = (productId: string) => {

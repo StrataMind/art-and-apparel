@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCart } from '@/contexts/cart-context'
 import { motion } from 'framer-motion'
+import { trackSearch } from '@/lib/analytics'
 import {
   Search,
   ShoppingCart,
@@ -68,6 +69,9 @@ export default function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
+      // Track search event
+      trackSearch(searchQuery.trim())
+      
       router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
       setSearchQuery('')
       setShowSuggestions(false)
@@ -77,6 +81,9 @@ export default function Header() {
   const handleSuggestionClick = (suggestion: typeof searchSuggestions[0]) => {
     setSearchQuery(suggestion.title)
     setShowSuggestions(false)
+    
+    // Track search event for suggestion click
+    trackSearch(suggestion.title)
     
     if (suggestion.type === 'category') {
       router.push(`/categories?filter=${encodeURIComponent(suggestion.title)}`)

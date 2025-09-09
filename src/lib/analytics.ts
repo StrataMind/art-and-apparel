@@ -1,4 +1,227 @@
-// Product Analytics System
+// Google Analytics 4 tracking utilities for Findora e-commerce
+
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+    dataLayer: any[];
+  }
+}
+
+// Utility to safely call gtag
+const gtag = (...args: any[]) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag(...args);
+  }
+};
+
+// Page view tracking
+export const trackPageView = (url: string, title?: string) => {
+  gtag('config', 'G-KJF42B5EK8', {
+    page_title: title || document.title,
+    page_location: url,
+  });
+};
+
+// E-commerce Events
+
+// Product view tracking
+export const trackProductView = (product: {
+  item_id: string;
+  item_name: string;
+  item_category?: string;
+  item_brand?: string;
+  price: number;
+  currency?: string;
+}) => {
+  gtag('event', 'view_item', {
+    currency: product.currency || 'USD',
+    value: product.price,
+    items: [
+      {
+        item_id: product.item_id,
+        item_name: product.item_name,
+        item_category: product.item_category,
+        item_brand: product.item_brand,
+        price: product.price,
+        quantity: 1,
+      },
+    ],
+  });
+};
+
+// Add to cart tracking
+export const trackAddToCart = (product: {
+  item_id: string;
+  item_name: string;
+  item_category?: string;
+  item_brand?: string;
+  price: number;
+  quantity: number;
+  currency?: string;
+}) => {
+  gtag('event', 'add_to_cart', {
+    currency: product.currency || 'USD',
+    value: product.price * product.quantity,
+    items: [
+      {
+        item_id: product.item_id,
+        item_name: product.item_name,
+        item_category: product.item_category,
+        item_brand: product.item_brand,
+        price: product.price,
+        quantity: product.quantity,
+      },
+    ],
+  });
+};
+
+// Remove from cart tracking
+export const trackRemoveFromCart = (product: {
+  item_id: string;
+  item_name: string;
+  item_category?: string;
+  price: number;
+  quantity: number;
+  currency?: string;
+}) => {
+  gtag('event', 'remove_from_cart', {
+    currency: product.currency || 'USD',
+    value: product.price * product.quantity,
+    items: [
+      {
+        item_id: product.item_id,
+        item_name: product.item_name,
+        item_category: product.item_category,
+        price: product.price,
+        quantity: product.quantity,
+      },
+    ],
+  });
+};
+
+// Wishlist tracking
+export const trackAddToWishlist = (product: {
+  item_id: string;
+  item_name: string;
+  item_category?: string;
+  price: number;
+  currency?: string;
+}) => {
+  gtag('event', 'add_to_wishlist', {
+    currency: product.currency || 'USD',
+    value: product.price,
+    items: [
+      {
+        item_id: product.item_id,
+        item_name: product.item_name,
+        item_category: product.item_category,
+        price: product.price,
+      },
+    ],
+  });
+};
+
+// Search tracking
+export const trackSearch = (searchTerm: string, resultsCount?: number) => {
+  gtag('event', 'search', {
+    search_term: searchTerm,
+    ...(resultsCount !== undefined && { results_count: resultsCount }),
+  });
+};
+
+// Purchase tracking
+export const trackPurchase = (transaction: {
+  transaction_id: string;
+  value: number;
+  currency?: string;
+  tax?: number;
+  shipping?: number;
+  items: Array<{
+    item_id: string;
+    item_name: string;
+    item_category?: string;
+    item_brand?: string;
+    price: number;
+    quantity: number;
+  }>;
+}) => {
+  gtag('event', 'purchase', {
+    transaction_id: transaction.transaction_id,
+    value: transaction.value,
+    currency: transaction.currency || 'USD',
+    tax: transaction.tax || 0,
+    shipping: transaction.shipping || 0,
+    items: transaction.items,
+  });
+};
+
+// Begin checkout tracking
+export const trackBeginCheckout = (items: Array<{
+  item_id: string;
+  item_name: string;
+  item_category?: string;
+  price: number;
+  quantity: number;
+}>, value: number, currency = 'USD') => {
+  gtag('event', 'begin_checkout', {
+    currency,
+    value,
+    items,
+  });
+};
+
+// User Interaction Events
+
+// Button click tracking
+export const trackButtonClick = (buttonName: string, section?: string) => {
+  gtag('event', 'click', {
+    event_category: 'engagement',
+    event_label: buttonName,
+    custom_parameter_1: section,
+  });
+};
+
+// Quick view tracking
+export const trackQuickView = (product: {
+  item_id: string;
+  item_name: string;
+  item_category?: string;
+}) => {
+  gtag('event', 'quick_view', {
+    event_category: 'engagement',
+    event_label: product.item_name,
+    custom_parameter_1: product.item_id,
+    custom_parameter_2: product.item_category,
+  });
+};
+
+// Share tracking
+export const trackShare = (content: {
+  content_type: 'product' | 'category' | 'page';
+  content_id: string;
+  method?: 'social' | 'link' | 'email';
+}) => {
+  gtag('event', 'share', {
+    content_type: content.content_type,
+    content_id: content.content_id,
+    method: content.method || 'link',
+  });
+};
+
+// User Authentication Events
+export const trackSignUp = (method: string = 'email') => {
+  gtag('event', 'sign_up', {
+    method,
+  });
+};
+
+export const trackLogin = (method: string = 'email') => {
+  gtag('event', 'login', {
+    method,
+  });
+};
+
+// Legacy interface for backward compatibility
 export interface ProductView {
   productId: string
   userId?: string

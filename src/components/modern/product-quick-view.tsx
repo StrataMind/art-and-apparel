@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useWishlist } from '@/contexts/wishlist-context'
 import { useCart } from '@/contexts/cart-context'
+import { trackProductView, trackQuickView } from '@/lib/analytics'
 
 interface Product {
   id: string
@@ -53,6 +54,25 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
   const { dispatch: cartDispatch } = useCart()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
+
+  // Track quick view when modal opens
+  React.useEffect(() => {
+    if (isOpen && product) {
+      trackQuickView({
+        item_id: product.id,
+        item_name: product.name,
+        item_category: product.category
+      })
+
+      trackProductView({
+        item_id: product.id,
+        item_name: product.name,
+        item_category: product.category,
+        price: product.price,
+        currency: 'USD'
+      })
+    }
+  }, [isOpen, product])
 
   if (!product) return null
 
