@@ -26,7 +26,7 @@ function createPrismaClient() {
         url: databaseUrl
       }
     },
-    log: ['error', 'warn', 'info'],
+    log: ['error', 'warn'],
   })
 }
 
