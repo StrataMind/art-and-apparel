@@ -74,8 +74,8 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    // Protect all API routes except public ones
-    '/api/((?!auth|public).*)',
+    // Protect all API routes except public ones and placeholder images
+    '/api/((?!auth|public|placeholder).*)',
     // Protect dashboard and admin areas
     '/dashboard/:path*',
     '/seller/:path*',
