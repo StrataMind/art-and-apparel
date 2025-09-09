@@ -100,6 +100,13 @@ export default function Header() {
               Categories
             </Link>
 
+            <Link
+              href="/sellers"
+              className="text-slate-300 hover:text-amber-400 font-medium transition-colors duration-300"
+            >
+              Sellers
+            </Link>
+
             {/* Notification Bell */}
             {session && (
               <motion.button
@@ -313,6 +320,13 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Categories
+            </Link>
+            <Link
+              href="/sellers"
+              className="block px-4 py-3 text-slate-300 hover:text-amber-400 hover:bg-slate-700/50 font-medium rounded-lg transition-all duration-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Sellers
             </Link>
 
             {session ? (
