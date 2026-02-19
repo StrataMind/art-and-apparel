@@ -1,14 +1,5 @@
 import Link from 'next/link';
 
-const artworks = [
-  { id: 1, title: 'Sunset Dreams', image: '/art/1.jpg', type: 'Painting' },
-  { id: 2, title: 'Ocean Waves', image: '/art/2.jpg', type: 'Painting' },
-  { id: 3, title: 'Mountain View', image: '/art/3.jpg', type: 'Painting' },
-  { id: 4, title: 'Abstract Mind', image: '/art/4.jpg', type: 'T-Shirt Design' },
-  { id: 5, title: 'City Lights', image: '/art/5.jpg', type: 'T-Shirt Design' },
-  { id: 6, title: 'Nature Flow', image: '/art/6.jpg', type: 'T-Shirt Design' },
-];
-
 export default function HomePage() {
   return (
     <div className="min-h-screen">
@@ -17,33 +8,54 @@ export default function HomePage() {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl font-serif mb-4">Art & Apparel</h1>
           <p className="text-xl text-neutral-600 mb-8">
-            Original paintings and custom t-shirt designs
+            Original paintings and custom designs
           </p>
-          <a
-            href="#donate"
-            className="inline-block bg-black text-white px-8 py-3 hover:bg-neutral-800"
-          >
-            Support My Work
-          </a>
+          <div className="flex gap-4 justify-center">
+            <Link href="/art" className="bg-black text-white px-8 py-3 hover:bg-neutral-800">
+              View Paintings
+            </Link>
+            <Link href="/merchandise" className="border-2 border-black px-8 py-3 hover:bg-black hover:text-white transition">
+              Merchandise
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Gallery */}
+      {/* Featured Sections */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-serif text-center mb-12">Gallery</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {artworks.map((art) => (
-              <div key={art.id} className="bg-white border border-neutral-200">
-                <div className="aspect-square bg-neutral-200 flex items-center justify-center">
-                  <span className="text-neutral-400">Image Placeholder</span>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Art Section */}
+            <Link href="/art" className="group">
+              <div className="border border-neutral-200 overflow-hidden hover:shadow-lg transition">
+                <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center">
+                  <span className="text-neutral-400">Original Paintings</span>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-medium mb-1">{art.title}</h3>
-                  <p className="text-sm text-neutral-600">{art.type}</p>
+                <div className="p-6">
+                  <h2 className="text-2xl font-serif mb-2 group-hover:underline">Original Art</h2>
+                  <p className="text-neutral-600 mb-4">
+                    One-of-a-kind paintings available for purchase. Each piece is signed and comes with authenticity.
+                  </p>
+                  <span className="text-sm font-medium">Browse Collection →</span>
                 </div>
               </div>
-            ))}
+            </Link>
+
+            {/* Merchandise Section */}
+            <Link href="/merchandise" className="group">
+              <div className="border border-neutral-200 overflow-hidden hover:shadow-lg transition">
+                <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center">
+                  <span className="text-neutral-400">Merchandise</span>
+                </div>
+                <div className="p-6">
+                  <h2 className="text-2xl font-serif mb-2 group-hover:underline">Merchandise</h2>
+                  <p className="text-neutral-600 mb-4">
+                    T-shirts, prints, and more featuring original designs. Coming soon!
+                  </p>
+                  <span className="text-sm font-medium">Learn More →</span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -89,7 +101,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 max-w-2xl text-center">
           <h2 className="text-3xl font-serif mb-6">About</h2>
           <p className="text-lg text-neutral-600 leading-relaxed">
-            I&apos;m an artist creating original paintings and t-shirt designs. 
+            I&apos;m an artist creating original paintings and designs. 
             Each piece is crafted with passion and attention to detail. 
             Thank you for visiting my gallery!
           </p>

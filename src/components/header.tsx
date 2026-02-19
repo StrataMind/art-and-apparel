@@ -13,6 +13,11 @@ export default function Header() {
           Art & Apparel
         </Link>
 
+        <nav className="hidden md:flex gap-8">
+          <Link href="/art" className="hover:underline">Paintings</Link>
+          <Link href="/merchandise" className="hover:underline">Merchandise</Link>
+        </nav>
+
         <div className="flex items-center gap-4 text-sm">
           {session ? (
             <>
