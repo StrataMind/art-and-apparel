@@ -7,28 +7,33 @@ export default function Header() {
   const { data: session } = useSession();
 
   return (
-    <header className="border-b border-neutral-200 bg-white">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-serif hover:opacity-80">
-          Art & Apparel
-        </Link>
+    <header className="border-b border-neutral-300 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between py-6">
+          <Link href="/" className="text-3xl tracking-wide hover:opacity-70 transition">
+            Art & Apparel
+          </Link>
 
-        <nav className="hidden md:flex gap-8">
-          <Link href="/art" className="hover:underline">Paintings</Link>
-          <Link href="/merchandise" className="hover:underline">Merchandise</Link>
-        </nav>
+          <nav className="hidden md:flex gap-12 text-sm uppercase tracking-widest">
+            <Link href="/art" className="hover:opacity-70 transition">Paintings</Link>
+            <Link href="/merchandise" className="hover:opacity-70 transition">Merchandise</Link>
+            <a href="#donate" className="hover:opacity-70 transition">Support</a>
+          </nav>
 
-        <div className="flex items-center gap-4 text-sm">
-          {session ? (
-            <>
-              <span>Hi, {session.user?.name}</span>
-              <button onClick={() => signOut()} className="hover:underline">
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <Link href="/auth/signin" className="hover:underline">Sign In</Link>
-          )}
+          <div className="flex items-center gap-6 text-sm">
+            {session ? (
+              <>
+                <span className="text-neutral-600">Welcome, {session.user?.name?.split(' ')[0]}</span>
+                <button onClick={() => signOut()} className="hover:opacity-70 transition uppercase tracking-wide">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link href="/auth/signin" className="hover:opacity-70 transition uppercase tracking-wide">
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </header>
