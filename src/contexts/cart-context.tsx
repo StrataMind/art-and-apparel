@@ -1,7 +1,6 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
-import { trackAddToCart, trackRemoveFromCart } from '@/lib/analytics'
 
 export interface CartItem {
   id: string
@@ -60,15 +59,6 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         newItems = [...state.items, { ...action.payload, quantity: 1 }]
       }
 
-      // Track add to cart event
-      trackAddToCart({
-        item_id: action.payload.id,
-        item_name: action.payload.name,
-        price: action.payload.price,
-        quantity: 1,
-        currency: 'USD'
-      })
-
       const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0)
       const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
       const tax = subtotal * 0.08 // 8% tax
@@ -88,22 +78,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
 
     case 'REMOVE_ITEM': {
-      // Get item details before removing for tracking
-      const removedItem = state.items.find(item => item.id === action.payload)
-      
       const newItems = state.items.filter(item => item.id !== action.payload)
       
-      // Track remove from cart event
-      if (removedItem) {
-        trackRemoveFromCart({
-          item_id: removedItem.id,
-          item_name: removedItem.name,
-          price: removedItem.price,
-          quantity: removedItem.quantity,
-          currency: 'USD'
-        })
-      }
-
       const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0)
       const subtotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
       const tax = subtotal * 0.08
