@@ -1,6 +1,7 @@
 import './globals.css';
 import Header from '@/components/header';
 import Providers from '@/components/providers';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Art & Apparel - Original Paintings & Designs',
@@ -50,6 +51,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </div>
               <div className="text-center text-sm text-neutral-600 pt-8 border-t border-neutral-300">
+                <div className="flex justify-center gap-6 mb-4">
+                  <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+                  <Link href="/terms" className="hover:underline">Terms of Service</Link>
+                </div>
                 <p>&copy; {new Date().getFullYear()} Art & Apparel. All rights reserved.</p>
               </div>
             </div>
