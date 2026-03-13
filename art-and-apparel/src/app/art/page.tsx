@@ -1,57 +1,23 @@
-const paintings = [
+import Image from 'next/image';
   { 
     id: 1, 
-    title: 'Sunset Dreams', 
-    price: 250,
-    size: '24" × 36"',
-    medium: 'Oil on Canvas',
-    description: 'A vibrant sunset over rolling hills',
-    available: true
+    title: 'Digital Canvas #1', 
+    price: 299,
+    size: 'Digital Art',
+    medium: 'AI & Digital Design',
+    description: 'Vibrant digital creation with intricate details',
+    available: true,
+    image: '/art1.jpg'
   },
   { 
     id: 2, 
-    title: 'Ocean Waves', 
-    price: 300,
-    size: '30" × 40"',
-    medium: 'Acrylic on Canvas',
-    description: 'Powerful waves crashing on the shore',
-    available: true
-  },
-  { 
-    id: 3, 
-    title: 'Mountain View', 
-    price: 350,
-    size: '36" × 48"',
-    medium: 'Oil on Canvas',
-    description: 'Majestic mountain landscape',
-    available: true
-  },
-  { 
-    id: 4, 
-    title: 'Abstract Mind', 
-    price: 200,
-    size: '20" × 30"',
-    medium: 'Mixed Media',
-    description: 'Abstract expression of thoughts',
-    available: false
-  },
-  { 
-    id: 5, 
-    title: 'City Lights', 
-    price: 275,
-    size: '24" × 36"',
-    medium: 'Acrylic on Canvas',
-    description: 'Urban nightscape with vibrant lights',
-    available: true
-  },
-  { 
-    id: 6, 
-    title: 'Nature Flow', 
-    price: 225,
-    size: '20" × 30"',
-    medium: 'Watercolor',
-    description: 'Flowing natural forms and colors',
-    available: true
+    title: 'Digital Canvas #2', 
+    price: 349,
+    size: 'Digital Art',
+    medium: 'AI & Digital Design',
+    description: 'Stunning digital artwork with unique composition',
+    available: true,
+    image: '/art2.jpg'
   },
 ];
 
@@ -69,8 +35,17 @@ export default function ArtPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
         {paintings.map((painting) => (
           <div key={painting.id} className="border border-neutral-300 hover:shadow-2xl transition-all duration-300">
-            <div className="aspect-[3/4] bg-neutral-100 flex items-center justify-center border-b border-neutral-300">
-              <span className="text-neutral-400 text-sm uppercase tracking-widest">Image</span>
+            <div className="aspect-[3/4] bg-neutral-100 flex items-center justify-center border-b border-neutral-300 relative overflow-hidden">
+              {painting.image ? (
+                <Image
+                  src={painting.image}
+                  alt={painting.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <span className="text-neutral-400 text-sm uppercase tracking-widest">Image</span>
+              )}
             </div>
             <div className="p-6">
               <h3 className="text-2xl mb-3 text-center">{painting.title}</h3>
